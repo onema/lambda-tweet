@@ -9,10 +9,10 @@ class TweetS3Images(object):
         self._file = None
 
     def send_image(self, bucket, image_name, cleanup=False):
-        temp_file = './{}'.format(image_name)
+        temp_file = '/tmp/{}'.format(image_name)
         self._s3_client.download_file(bucket, image_name, temp_file)
         self._file = open(temp_file, 'rb')
-        status = 'New image {}'.format(image_name)
+        status = 'New image {} brought to you by lambda-tweet'.format(image_name)
         tags = exifread.process_file(self._file)
 
         self._twitter.update_with_media(filename=image_name, status=status, file=self._file)
