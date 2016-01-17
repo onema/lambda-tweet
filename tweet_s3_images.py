@@ -12,8 +12,8 @@ class TweetS3Images(object):
         temp_file = '/tmp/{}'.format(image_name)
         self._s3_client.download_file(bucket, image_name, temp_file)
         self._file = open(temp_file, 'rb')
-        status = 'New image {} brought to you by lambda-tweet'.format(image_name)
         tags = exifread.process_file(self._file)
+        status = self.get_image_description(tags, image_name)
 
         self._twitter.update_with_media(filename=image_name, status=status, file=self._file)
 
@@ -23,5 +23,15 @@ class TweetS3Images(object):
     def get_file(self):
         return self._file
 
-    def cleanup(self, file):
-        os.remove(file)
+    @staticmethod
+    def cleanup(file_to_remove):
+        os.remove(file_to_remove)
+
+    @staticmethod
+    def get_image_description(tags, image_name):
+        if 'Image ImageDescription' in tags:
+            status = tags['Image ImageDescription'].values
+        else:
+            status = 'New image {} brought to you by lambda-tweet'.format(image_name)
+
+        return status
