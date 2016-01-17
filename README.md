@@ -14,10 +14,10 @@ following structure:
  
 ```
 {
-    'consumer-key': 'Twitter API consumer key',
-    'consumer-secret': 'Twitter API consumer secret',
-    'access-token': 'Twitter API access token', 
-    'access-token-secret': Twitter API access token secret'
+    "consumer-key": "Twitter API consumer key",
+    "consumer-secret": "Twitter API consumer secret",
+    "access-token": "Twitter API access token", 
+    "access-token-secret": "Twitter API access token secret"
 }
 ```
  
