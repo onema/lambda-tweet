@@ -30,7 +30,8 @@ class TweetS3Images(object):
     @staticmethod
     def get_image_description(tags, image_name):
         if 'Image ImageDescription' in tags:
-            status = tags['Image ImageDescription'].values
+            description = tags['Image ImageDescription'].values
+            status = (description[:140] + '..') if len(description) > 75 else description
         else:
             status = 'New image {} brought to you by lambda-tweet'.format(image_name)
 
