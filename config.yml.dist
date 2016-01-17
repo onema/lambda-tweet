@@ -1,0 +1,13 @@
+app:
+    encryption-key: arn:aws:kms:REGION:ACCOUNT_ID:key/KMS_KEY
+resources:
+    source-s3:
+        name: test
+        type: s3
+        event-source:
+            # http://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-event-types-and-destinations
+            event-type: s3:ObjectCreated:Put
+        allow:
+          - s3:GetObject
+          - s3:ListBucket
+          - s3:PutObject
