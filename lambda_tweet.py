@@ -19,7 +19,8 @@ with open('./config.json', 'r') as file:
 
 def lambda_handler(event, context):
     print('Received event: ' + json.dumps(event, indent=2))
-    s3_info = event['Records'][0]['S3']
+    print()
+    s3_info = event['Records'][0]['s3']
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
