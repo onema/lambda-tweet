@@ -10,38 +10,21 @@ from tweet_s3_images import TweetS3Images
 
 class TweetS3ImagesTest(TestCase):
     def test_sending_images(self):
+        # ensure there is an image as the mock object will not do anything
+        shutil.copy('./image.jpg', '/tmp/image.jpg')
+        client = boto3.client('s3')
+        client.download_file = MagicMock(return_value=None)
+
         auth = tweepy.OAuthHandler('foo', 'bar')
         api = tweepy.API(auth)
         api.update_with_media = MagicMock(return_value=Status())
 
-        client = boto3.client('s3')
-        client.download_file = MagicMock(return_value=None)
-
         tweet_images = TweetS3Images(api, client)
-        tweet_images.send_image('test_bucket', 'image.jpg')
+        tweet_images.send_image('test_bucket', 'image.jpg', cleanup=True)
 
-        client.download_file.assert_called_with('test_bucket', 'image.jpg', './image.jpg')
+        client.download_file.assert_called_with('test_bucket', 'image.jpg', '/tmp/image.jpg')
         api.update_with_media.assert_called_with(
                 filename='image.jpg',
-                status='New image image.jpg',
+                status='New image image.jpg brought to you by lambda-tweet',
                 file=tweet_images.get_file())
-
-    def test_sending_images_with_cleanup(self):
-        shutil.copy('./image.jpg', './image-test.jpg')
-        auth = tweepy.OAuthHandler('foo', 'bar')
-        api = tweepy.API(auth)
-        api.update_with_media = MagicMock(return_value=Status())
-
-        client = boto3.client('s3')
-        client.download_file = MagicMock(return_value=None)
-
-        tweet_images = TweetS3Images(api, client)
-        tweet_images.send_image('test_bucket', 'image-test.jpg', True)
-
-        client.download_file.assert_called_with('test_bucket', 'image-test.jpg', './image-test.jpg')
-        api.update_with_media.assert_called_with(
-                filename='image-test.jpg',
-                status='New image image-test.jpg',
-                file=tweet_images.get_file())
-
-        self.assertFalse(os.path.exists('./image-test.jpg'), 'The image was not cleaned up correctly.')
+        self.assertFalse(os.path.exists('/tmp/image-test.jpg'), 'The image was not cleaned up correctly.')
